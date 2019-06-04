@@ -1,0 +1,33 @@
+<div class="container">
+
+<h1>List Cart Items</h1>
+
+<form class="form-group" #itemForm="ngForm" (ngSubmit)="addItems(itemForm)">
+    <label for="">Add New Item</label>
+    <input class="form-control" type="text" ngModel name="newItem">
+    <button class="btn btn-success">Add</button>
+</form>
+
+<div class="form-group" *ngFor="let item of cartitems">
+    <p>ID: {{ item.id }}</p>
+    <p>NAME: {{ item.product }}</p>
+    <p>PRICE: {{ item.price }}</p>
+    <p>QUANTITY: {{ item.quantity }}</p>
+    <button class="btn btn-success" (click)="deleteItems(item.id)">Delete Item</button>
+
+    <form #updateForm="ngForm" (ngSubmit)="updateItems(updateForm.value.updateditemname, item.id)">
+        <label for="">Edit This Item</label>
+        <input class="form-control" type="text" ngModel name="updateditemname">
+        <button class="btn btn-success">Update Item</button>
+    </form>
+</div>
+
+</div>
+
+
+<!-- <div class="form-group">
+  <label for="power">Hero Power</label>
+  <select class="form-control" id="power" required>
+    <option *ngFor="let pow of powers" [value]="pow">{{pow}}</option>
+  </select>
+</div> -->

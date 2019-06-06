@@ -41,7 +41,7 @@ module.exports = "@import url('https://unpkg.com/bootstrap@3.3.7/dist/css/bootst
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"container\">\n\n<h1>List Cart Items</h1>\n\n<form class=\"form-group\" #itemForm=\"ngForm\" (ngSubmit)=\"addItems(itemForm.value.newitem)\">\n    <label for=\"\">Add New Item</label>\n    <input class=\"form-control\" type=\"text\" ngModel name=\"newitem\">\n    <button class=\"btn btn-success\">Add</button>\n</form>\n\n<div class=\"form-group\" *ngFor=\"let item of cartitems\">\n    <p>ID: {{ item.id }}</p>\n    <p>NAME: {{ item.product }}</p>\n    <p>PRICE: {{ item.price }}</p>\n    <p>QUANTITY: {{ item.quantity }}</p>\n    <button class=\"btn btn-success\" (click)=\"deleteItems(item.id)\">Delete Item</button>\n\n    <form #updateForm=\"ngForm\" (ngSubmit)=\"updateItems(updateForm.value.updateditemname, item.id)\">\n        <label for=\"\">Edit This Item</label>\n        <input class=\"form-control\" type=\"text\" ngModel name=\"updateditemname\">\n        <button class=\"btn btn-success\">Update Item</button>\n    </form>\n</div>\n\n</div>\n\n\n<!-- <div class=\"form-group\">\n  <label for=\"power\">Hero Power</label>\n  <select class=\"form-control\" id=\"power\" required>\n    <option *ngFor=\"let pow of powers\" [value]=\"pow\">{{pow}}</option>\n  </select>\n</div> -->"
+module.exports = "<div class=\"container\">\n\n<h1>List Cart Items</h1>\n\n<form class=\"form-group\" #itemForm=\"ngForm\" (ngSubmit)=\"addNewItem(itemForm)\">\n    <label for=\"\">Item Name</label>\n    <input class=\"form-control\" type=\"text\" ngModel name=\"product\">\n\n    <label for=\"\">Price</label>\n    <input class=\"form-control\" type=\"number\" ngModel name=\"price\">\n\n    <label for=\"\">Quantity</label>\n    <input class=\"form-control\" type=\"number\" ngModel name=\"quantity\">\n    \n    <button class=\"btn btn-success\">Add</button>\n</form>\n\n<div class=\"form-group\" *ngFor=\"let item of cartitems; index as i\">\n    <p>ID: {{ item.id }}</p>\n    <p>NAME: {{ item.product }}</p>\n    <p>PRICE: {{ item.price }}</p>\n    <p>QUANTITY: {{ item.quantity }}</p>\n    <button class=\"btn btn-success\" (click)=\"deleteItems(item.id)\">Delete Item</button>\n    <button class=\"btn btn-success\" (click)=\"toggleForm(i)\">Edit</button>\n\n    <form *ngIf=\"item.beingUpdated\" #updateForm=\"ngForm\" (ngSubmit)=\"updateItems(item)\">\n        <!-- <label for=\"\">Edit This Item</label>\n        <input class=\"form-control\" type=\"text\" ngModel name=\"updateditemname\"> -->\n\n        <label for=\"\">Item Name</label>\n        <input class=\"form-control\" type=\"text\" [(ngModel)]=\"item.product\" name=\"product\">\n\n        <label for=\"\">Price</label>\n        <input class=\"form-control\" type=\"number\" [(ngModel)]=\"item.price\" name=\"price\">\n\n        <label for=\"\">Quantity</label>\n        <input class=\"form-control\" type=\"number\" [(ngModel)]=\"item.quantity\" name=\"quantity\">\n        \n        <button class=\"btn btn-success\">Update Item</button>\n    </form>\n</div>\n\n</div>\n\n\n<!-- <div class=\"form-group\">\n  <label for=\"power\">Hero Power</label>\n  <select class=\"form-control\" id=\"power\" required>\n    <option *ngFor=\"let pow of powers\" [value]=\"pow\">{{pow}}</option>\n  </select>\n</div> -->"
 
 /***/ }),
 
@@ -65,10 +65,65 @@ var AppComponent = /** @class */ (function () {
     function AppComponent(cartService) {
         var _this = this;
         this.cartService = cartService;
+        this.shouldBeHidden = true;
         this.cartService.getItems().subscribe(function (response) {
             _this.cartitems = response;
+            console.log(_this.cartitems);
         });
     }
+    AppComponent.prototype.toggleForm = function (index) {
+        this.cartitems[index].beingUpdated = !this.cartitems[index].beingUpdated;
+        console.log(this.cartitems[index]);
+        // this.shouldBeHidden = !this.shouldBeHidden; removed after adding .beingUpdated
+    };
+    AppComponent.prototype.addNewItem = function (form) {
+        // console.log(form.value.fur);
+        var _this = this;
+        console.log(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"]({}, form.value
+        // , 
+        // fur: form.value.fur === "" ? false : form.value.fur,
+        // scales: form.value.scales === "" ? false : form.value.scales,
+        // feather: form.value.feather === "" ? false : form.value.feather
+        ));
+        this.cartService.addItems(tslib__WEBPACK_IMPORTED_MODULE_0__["__assign"]({}, form.value
+        // , 
+        // fur: form.value.fur === "" ? false : form.value.fur,
+        // scales: form.value.scales === "" ? false : form.value.scales,
+        // feather: form.value.feather === "" ? false : form.value.feather
+        )).subscribe(function (response) {
+            _this.cartitems = response;
+        });
+    };
+    // addItems(newItem) {
+    //   this.cartService.addItems(newItem.value).subscribe(response => {
+    //     this.cartitems = response;
+    //     console.log(newItem);
+    //   });
+    // }
+    AppComponent.prototype.deleteItems = function (id) {
+        var _this = this;
+        this.cartService.deleteItems(id).subscribe(function (response) {
+            _this.cartitems = response;
+            console.log(_this.cartitems);
+        });
+    };
+    // deleteItems(itemid) {
+    //   this.cartService.deleteItems(itemid).subscribe(response => {
+    //     this.cartitems = response;
+    //   });
+    // }
+    // updateItems(newname, oldname) {
+    //   this.cartService.updateItems(newname, oldname).subscribe(response => {
+    //     this.cartitems = response;
+    //   });
+    // }
+    AppComponent.prototype.updateItems = function (item) {
+        var _this = this;
+        console.log(item);
+        this.cartService.updateItems(item).subscribe(function (response) {
+            _this.cartitems = response;
+        });
+    };
     AppComponent = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Component"])({
             selector: 'app-root',
@@ -154,6 +209,15 @@ var CartService = /** @class */ (function () {
     }
     CartService.prototype.getItems = function () {
         return this.http.get("/api/cartitems", { responseType: "json" });
+    };
+    CartService.prototype.addItems = function (newItem) {
+        return this.http.post("/api/cartitems", newItem, { responseType: "json" });
+    };
+    CartService.prototype.deleteItems = function (name) {
+        return this.http.delete("/api/cartitems/" + name, { responseType: "json" });
+    };
+    CartService.prototype.updateItems = function (item) {
+        return this.http.put("/api/cartitems/" + item.id, item, { responseType: "json" });
     };
     CartService = tslib__WEBPACK_IMPORTED_MODULE_0__["__decorate"]([
         Object(_angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"])({

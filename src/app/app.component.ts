@@ -11,17 +11,53 @@ import { CartService } from "./cart-service.service";
 export class AppComponent {
 
   cartitems: any;
+  shouldBeHidden: boolean = true;
 
   constructor(private cartService: CartService) {
     this.cartService.getItems().subscribe(response => {
       this.cartitems = response;
+      console.log(this.cartitems);
     });
   }
 
-  addItems(newItem) {
-    this.cartService.addItems(newItem.value).subscribe(response => {
+  toggleForm(index) {
+    this.cartitems[index].beingUpdated = !this.cartitems[index].beingUpdated;
+    console.log(this.cartitems[index]);
+    // this.shouldBeHidden = !this.shouldBeHidden; removed after adding .beingUpdated
+  }
+
+  addNewItem(form) {
+    // console.log(form.value.fur);
+   
+    console.log({ 
+      ...form.value
+      // , 
+      // fur: form.value.fur === "" ? false : form.value.fur,
+      // scales: form.value.scales === "" ? false : form.value.scales,
+      // feather: form.value.feather === "" ? false : form.value.feather
+    });
+    this.cartService.addItems({ 
+      ...form.value
+      // , 
+      // fur: form.value.fur === "" ? false : form.value.fur,
+      // scales: form.value.scales === "" ? false : form.value.scales,
+      // feather: form.value.feather === "" ? false : form.value.feather
+    }).subscribe(response => {
       this.cartitems = response;
-      console.log(newItem);
+    });
+  }
+
+  // addItems(newItem) {
+  //   this.cartService.addItems(newItem.value).subscribe(response => {
+  //     this.cartitems = response;
+  //     console.log(newItem);
+  //   });
+  // }
+
+  deleteItems(id) {
+    this.cartService.deleteItems(id).subscribe(response => {
+      this.cartitems = response;
+      console.log(this.cartitems);
     });
   }
 
@@ -36,4 +72,13 @@ export class AppComponent {
   //     this.cartitems = response;
   //   });
   // }
+
+  updateItems(item) {
+    console.log(item);
+    
+    this.cartService.updateItems(item).subscribe(response => {
+      this.cartitems = response;
+    });
+  }
+
 }
